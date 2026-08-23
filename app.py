@@ -17,7 +17,6 @@ ARCH_GASTOS = "gastos_vg.json"
 def obtener_tiempo_peru():
     return datetime.now(ZONA_PERU)
 
-# Funciones de persistencia en archivos locales (Memoria permanente)
 def cargar_datos():
     inv_inicial = [
         {"Categoría": "Abarrotes", "Producto": "Arroz Costeño (kg)", "Precio Venta": 4.50, "Costo Compra": 3.80, "Stock": 25.0},
@@ -78,27 +77,28 @@ def guardar_gastos(gastos):
     with open(ARCH_GASTOS, "w", encoding="utf-8") as f:
         json.dump(gastos, f, ensure_ascii=False, indent=4)
 
-# Estilo visual con fondo gris plateado moderno
+# Estilo visual con fondo plateado claro y textos oscuros súper legibles
 st.markdown("""
 <style>
     .stApp {
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+        background-color: #f1f5f9;
     }
     .main-header {
-        background: linear-gradient(135deg, #334155, #1e293b);
+        background: #ffffff;
+        border: 2px solid #cbd5e1;
         padding: 24px;
         border-radius: 16px;
-        color: white;
+        color: #0f172a;
         margin-bottom: 20px;
-        box-shadow: 0 6px 20px rgba(30, 41, 59, 0.2);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         text-align: center;
     }
-    .main-header h1 { margin: 0; font-size: 30px; font-weight: 800; color: #ffffff !important; }
-    .main-header p { margin: 6px 0 0 0; font-size: 14px; color: #cbd5e1 !important; font-weight: 500; }
+    .main-header h1 { margin: 0; font-size: 28px; font-weight: 800; color: #0f172a !important; }
+    .main-header p { margin: 6px 0 0 0; font-size: 14px; color: #475569 !important; font-weight: 600; }
     
     .report-box {
         background-color: #ffffff;
-        border: 2px dashed #64748b;
+        border: 2px solid #94a3b8;
         padding: 20px;
         border-radius: 12px;
         margin-top: 15px;
@@ -112,7 +112,7 @@ st.markdown("""
         background: #ffffff;
         padding: 35px;
         border-radius: 18px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         text-align: center;
         border: 1px solid #cbd5e1;
     }
@@ -122,7 +122,6 @@ st.markdown("""
 if 'autenticado' not in st.session_state:
     st.session_state.autenticado = False
 
-# Cargar datos persistentes
 if 'inventario' not in st.session_state or 'ventas' not in st.session_state or 'gastos' not in st.session_state:
     inv_arga, ventas_arga, gastos_arga = cargar_datos()
     st.session_state.inventario = inv_arga
@@ -132,8 +131,8 @@ if 'inventario' not in st.session_state or 'ventas' not in st.session_state or '
 if not st.session_state.autenticado:
     st.markdown("""
         <div class="login-card">
-            <h1 style="color: #1e293b !important; font-size: 32px; margin-bottom: 5px;">🛒 MINIMARKET VG 🛍️</h1>
-            <p style="color: #64748b !important; font-size: 15px; font-weight: 600;">Control de Inventario y Caja 🏪</p>
+            <h1 style="color: #0f172a !important; font-size: 32px; margin-bottom: 5px;">🛒 MINIMARKET VG 🛍️</h1>
+            <p style="color: #475569 !important; font-size: 15px; font-weight: 600;">Control de Inventario y Caja 🏪</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -147,7 +146,7 @@ if not st.session_state.autenticado:
     st.stop()
 
 with st.sidebar:
-    st.markdown("<h2 style='text-align: center; color: #1e293b;'>🏪 MINIMARKET VG 🛒</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align: center; color: #0f172a;'>🏪 MINIMARKET VG 🛒</h2>", unsafe_allow_html=True)
     st.image("https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80", caption="Tu Bodega de Confianza", use_container_width=True)
     st.caption("Panel de Control Comercial")
     if st.button("🔒 Cerrar Sesión", use_container_width=True):
@@ -294,7 +293,7 @@ elif menu == "📊 Cierre de Caja y Balance":
     if st.button("📄 Generar y Mostrar Reporte Diario Oficial", use_container_width=True):
         st.markdown(f"""
         <div class="report-box">
-            <h3 style="color: #334155; margin-top: 0;">🏪 MINIMARKET VG - REPORTE OFICIAL DE CAJA</h3>
+            <h3 style="color: #0f172a; margin-top: 0;">🏪 MINIMARKET VG - REPORTE OFICIAL DE CAJA</h3>
             <p><b>📅 Fecha de Emisión:</b> {obtener_tiempo_peru().strftime('%Y-%m-%d %H:%M:%S')}</p>
             <hr style="border: 0; border-top: 1px solid #cbd5e1;">
             <p><b>💰 Total de Ventas en el Día:</b> S/ {total_ventas_hoy:.2f}</p>
