@@ -1,16 +1,11 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import pytz
 import urllib.parse
 
 st.set_page_config(page_title="Minimarket Vega", page_icon="🛒", layout="centered")
 
 NUMERO_WHATSAPP = "51984116361"
-ZONA_PERU = pytz.timezone("America/Lima")
-
-def obtener_tiempo_peru():
-    return datetime.now(ZONA_PERU)
 
 st.markdown("""
 <style>
@@ -31,16 +26,8 @@ st.markdown("""
         color: #0f766e;
         margin-bottom: 20px;
     }
-    .report-box {
-        background-color: rgba(255, 255, 255, 0.95);
-        border: 2px dashed #0d9488;
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 15px;
-        color: #1e293b;
-    }
     h1, h2, h3, p, label { color: #ffffff !important; }
-    .report-box *, .stDataFrame *, div[data-baseweb="select"] * { color: #1e293b !important; }
+    .stDataFrame *, div[data-baseweb="select"] * { color: #1e293b !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -89,7 +76,7 @@ if menu == "🛒 Registrar Venta":
     if st.button("✅ Cobrar y Registrar Venta", use_container_width=True):
         if stock_actual >= cantidad:
             st.session_state.inventario.loc[st.session_state.inventario["Producto"] == producto_seleccionado, "Stock"] -= cantidad
-            ahora = obtener_tiempo_peru()
+            ahora = datetime.now()
             st.session_state.ventas.append({
                 "Fecha_Hora": ahora.strftime("%Y-%m-%d %H:%M"), "Fecha": ahora.strftime("%Y-%m-%d"),
                 "Producto": producto_seleccionado, "Cantidad": cantidad, "Total": total_cobrar,
@@ -117,11 +104,11 @@ elif menu == "📊 Cierre de Caja y Balance":
             desc_gasto = st.text_input("Motivo del gasto:")
             monto_gasto = st.number_input("Monto (S/):", min_value=0.0, step=0.50)
             if st.form_submit_button("Registrar Gasto") and desc_gasto:
-                ahora = obtener_tiempo_peru()
+                ahora = datetime.now()
                 st.session_state.gastos.append({"Fecha": ahora.strftime("%Y-%m-%d"), "Descripción": desc_gasto, "Monto": monto_gasto})
                 st.success(f"Gasto de S/ {monto_gasto:.2f} registrado.")
 
-    fecha_hoy = obtener_tiempo_peru().strftime("%Y-%m-%d")
+    fecha_hoy = datetime.now().strftime("%Y-%m-%d")
     ventas_hoy = [v for v in st.session_state.ventas if v["Fecha"] == fecha_hoy]
     gastos_hoy = [g for g in st.session_state.gastos if g["Fecha"] == fecha_hoy]
 
