@@ -4,7 +4,7 @@ from datetime import datetime
 import pytz
 import urllib.parse
 
-st.set_page_config(page_title="Minimarket Vega", page_icon="🛒", layout="centered")
+st.set_page_config(page_title="Minimarket VG", page_icon="🛒", layout="centered")
 
 NUMERO_WHATSAPP = "51984116361"
 ZONA_PERU = pytz.timezone("America/Lima")
@@ -12,40 +12,40 @@ ZONA_PERU = pytz.timezone("America/Lima")
 def obtener_tiempo_peru():
     return datetime.now(ZONA_PERU)
 
-# Estilo visual limpio, moderno y de alta legibilidad
+# Estilo visual con fondo cálido y elegante, tipografía legible
 st.markdown("""
 <style>
     .stApp {
-        background-color: #f1f5f9;
+        background-color: #fcfbf9;
     }
     .main-header {
         background: linear-gradient(135deg, #0f766e, #115e59);
-        padding: 26px;
-        border-radius: 14px;
+        padding: 24px;
+        border-radius: 16px;
         color: white;
-        margin-bottom: 22px;
-        box-shadow: 0 6px 18px rgba(15, 118, 110, 0.25);
+        margin-bottom: 20px;
+        box-shadow: 0 6px 20px rgba(15, 118, 110, 0.2);
         text-align: center;
     }
-    .main-header h1 { margin: 0; font-size: 32px; font-weight: 800; color: #ffffff !important; letter-spacing: 0.5px; }
-    .main-header p { margin: 8px 0 0 0; font-size: 15px; color: #ccfbf1 !important; font-weight: 500; }
+    .main-header h1 { margin: 0; font-size: 30px; font-weight: 800; color: #ffffff !important; }
+    .main-header p { margin: 6px 0 0 0; font-size: 14px; color: #ccfbf1 !important; font-weight: 500; }
     
     .report-box {
         background-color: #ffffff;
         border: 2px dashed #0d9488;
-        padding: 22px;
+        padding: 20px;
         border-radius: 12px;
         margin-top: 15px;
         margin-bottom: 15px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
     
-    /* Forzar texto oscuro y legible */
+    /* Forzar texto oscuro y legible en toda la app */
     .stMarkdown, .stText, h1, h2, h3, p, label, span { color: #1e293b !important; }
     
     .login-card {
         background: #ffffff;
-        padding: 40px;
+        padding: 35px;
         border-radius: 18px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         text-align: center;
@@ -60,8 +60,8 @@ if 'autenticado' not in st.session_state:
 if not st.session_state.autenticado:
     st.markdown("""
         <div class="login-card">
-            <h1 style="color: #0f766e !important; font-size: 34px; margin-bottom: 5px;">🛒 MINIMARKET VG 🛍️</h1>
-            <p style="color: #64748b !important; font-size: 16px; font-weight: 600;">Control de Inventario y Caja 🏪</p>
+            <h1 style="color: #0f766e !important; font-size: 32px; margin-bottom: 5px;">🛒 MINIMARKET VG 🛍️</h1>
+            <p style="color: #64748b !important; font-size: 15px; font-weight: 600;">Control de Inventario y Caja 🏪</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -102,7 +102,8 @@ if 'gastos' not in st.session_state:
 
 with st.sidebar:
     st.markdown("<h2 style='text-align: center; color: #0f766e;'>🏪 MINIMARKET VG 🛒</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; font-weight: 600; color: #334155;'>📦 Arroz • 🛢️ Aceite • 🥛 Leche</p>", unsafe_allow_html=True)
+    # Imagen referencial bonita en la barra lateral
+    st.image("https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80", caption="Tu Bodega de Confianza", use_container_width=True)
     st.caption("Panel de Control Comercial")
     if st.button("🔒 Cerrar Sesión", use_container_width=True):
         st.session_state.autenticado = False
@@ -123,9 +124,12 @@ if menu == "🛒 Registrar Venta":
     st.markdown("""
         <div class="main-header">
             <h1>🛒 MINIMARKET VG - CAJA Y VENTAS 🛍️</h1>
-            <p>📦 Control rápido de cobros, abarrotes, bebidas y ganancias al instante 💰</p>
+            <p>Control rápido de cobros, abarrotes y ganancias al instante</p>
         </div>
     """, unsafe_allow_html=True)
+    
+    # Imagen ilustrativa de productos de abarrotes al costado/arriba
+    st.image("https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=800&q=80", use_container_width=True)
     
     lista_productos = st.session_state.inventario["Producto"].tolist()
     producto_seleccionado = st.selectbox("📦 Seleccione el producto:", lista_productos)
@@ -159,7 +163,7 @@ elif menu == "📦 Ver Stock y Montos":
     st.markdown("""
         <div class="main-header">
             <h1>📦 INVENTARIO Y ABARROTES 🛒</h1>
-            <p>📊 Supervisa tu mercadería en almacén y valora tu capital en dinero 💵</p>
+            <p>Supervisa tu mercadería en almacén y valora tu capital</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -187,7 +191,7 @@ elif menu == "🛠️ Corregir Stock / Precios":
     st.markdown("""
         <div class="main-header">
             <h1>🛠️ CORRECCIÓN DE INVENTARIO 📝</h1>
-            <p>⚙️ Actualiza de forma rápida precios, costos o ajusta tu mercadería física 🏷️</p>
+            <p>Actualiza de forma rápida precios, costos o ajusta tu mercadería</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -207,7 +211,7 @@ elif menu == "📊 Cierre de Caja y Balance":
     st.markdown("""
         <div class="main-header">
             <h1>📊 CIERRE DE CAJA Y BALANCE 💰</h1>
-            <p>📈 Resumen final de ingresos, efectivo, Yape/Plin y ganancia neta 🌟</p>
+            <p>Resumen final de ingresos, efectivo, Yape/Plin y ganancia neta</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -261,7 +265,7 @@ elif menu == "📅 Reporte Semanal y Mensual":
     st.markdown("""
         <div class="main-header">
             <h1>📅 BALANCE SEMANAL Y MENSUAL 📈</h1>
-            <p>📊 Visualiza la evolución de tus ventas y el acumulado de ganancias 🌟</p>
+            <p>Visualiza la evolución de tus ventas y el acumulado de ganancias</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -288,7 +292,7 @@ elif menu == "📅 Reporte Semanal y Mensual":
                 df_g["Fecha_dt"] = pd.to_datetime(df_g["Fecha"])
                 g_f = df_g[df_g["Fecha_dt"] >= hace_7]
             else:
-                g_f = pd.DataFrame()
+                g_f = df_g.empty
 
         t_v = v_f["Total"].sum() if not v_f.empty else 0.0
         t_g_bruta = v_f["Ganancia"].sum() if not v_f.empty else 0.0
