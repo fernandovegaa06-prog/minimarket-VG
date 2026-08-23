@@ -56,7 +56,9 @@ with st.sidebar:
         [
             "🛒 Registrar Venta", 
             "📦 Ver Stock y Montos", 
-            "📊 Cierre de Caja y Balance"
+            "🛠️ Corregir Stock / Precios",
+            "📊 Cierre de Caja y Balance",
+            "📅 Reporte Semanal y Mensual"
         ]
     )
 
@@ -97,6 +99,18 @@ elif menu == "📦 Ver Stock y Montos":
     st.markdown("---")
     st.dataframe(inventario_df, use_container_width=True)
 
+elif menu == "🛠️ Corregir Stock / Precios":
+    st.markdown("""<div class="main-header"><h1>🛠️ Corrección de Inventario</h1><p>Actualiza precios, costos o ajusta el stock de tus productos.</p></div>""", unsafe_allow_html=True)
+    prod_a_editar = st.selectbox("🔍 Selecciona el producto a corregir:", st.session_state.inventario["Producto"].tolist())
+    fila_prod = st.session_state.inventario[st.session_state.inventario["Producto"] == prod_a_editar].iloc[0]
+    st.info(f"📌 Estado actual de **{prod_a_editar}** ➔ Stock: {fila_prod['Stock']} | Precio Venta: S/ {fila_prod['Precio Venta']:.2f}")
+    nuevo_stock = st.number_input("📦 Stock exacto:", value=float(fila_prod["Stock"]), step=1.0)
+    nuevo_precio = st.number_input("🏷️ Precio de Venta (S/):", value=float(fila_prod["Precio Venta"]), step=0.10)
+    nuevo_costo = st.number_input("📉 Costo de Compra (S/):", value=float(fila_prod["Costo Compra"]), step=0.10)
+    if st.button("💾 Guardar Cambios", use_container_width=True):
+        st.session_state.inventario.loc[st.session_state.inventario["Producto"] == prod_a_editar, ["Stock", "Precio Venta", "Costo Compra"]] = [nuevo_stock, nuevo_precio, nuevo_costo]
+        st.success(f"✅ ¡Los datos de '{prod_a_editar}' han sido actualizados con éxito!")
+
 elif menu == "📊 Cierre de Caja y Balance":
     st.markdown("""<div class="main-header"><h1>📊 Cierre de Caja y Balance Diario</h1><p>Resumen final de ingresos, gastos y ganancia neta.</p></div>""", unsafe_allow_html=True)
     with st.expander("💸 Registrar Gasto del Día"):
@@ -129,3 +143,48 @@ elif menu == "📊 Cierre de Caja y Balance":
     texto_wsp = f"*🏪 MINIMARKET VEGA - REPORTE DIARIO*\n📅 *Fecha:* {fecha_hoy}\n💰 *Total Vendido:* S/ {total_ventas_hoy:.2f}\n💵 *Efectivo:* S/ {efectivo_hoy:.2f}\n📱 *Yape / Plin:* S/ {yape_hoy:.2f}\n📉 *Total Gastos:* S/ {total_gastos_hoy:.2f}\n🌟 *Ganancia Neta:* S/ {ganancia_neta_hoy:.2f}\n"
     url_whatsapp = f"https://api.whatsapp.com/send?phone={NUMERO_WHATSAPP}&text={urllib.parse.quote(texto_wsp)}"
     st.markdown(f"""<a href="{url_whatsapp}" target="_blank" style="text-decoration: none;"><div style="background-color: #25d366; color: white; padding: 12px 20px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px; margin-top: 15px;">💬 Enviar Reporte a mi WhatsApp</div></a>""", unsafe_allow_html=True)
+
+elif menu == "📅 Reporte Semanal y Mensual":
+    st.markdown("""<div class="main-header"><h1>📅 Balance Semanal y Mensual</h1><p>Evolución de ventas y ganancias acumuladas.</p></div>""", unsafe_allow_html=True)
+    if not st.session_state.ventas and not st.session_state.gastos:
+        st.warning("Todavía no hay suficientes registros para calcular reportes.")
+    else:
+        df_v = pd.DataFrame(st.session_state.ventas)
+        df_g = pd.DataFrame(st.session_state.gastos)
+        tipo_rep = st.radio("Seleccione periodo:", ["📅 Mes Actual", "📆 Últimos 7 Días"], horizontal=True)
+        hoy = datetime.now()
+
+        if tipo_rep == "📅 Mes Actual":
+            mes_str = hoy.strftime("%Y-%m")
+            v_f = df_v[df_v["Fecha"].str.startswith(mes_str)] if not df_v.empty else pd.DataFrame()
+            g_f = df_g[df_g["Fecha"].str.startswith(mes_str)] if not df_g.empty else pd.DataFrame()
+        else:
+            hace_7 = pd.Timestamp(hoy.date()) - pd.Timedelta(days=7)
+            if not df_v.empty:
+                df_v["Fecha_dt"] = pd.to_datetime(df_v["Fecha"])
+                v_f = df_v[df_v["Fecha_dt"] >= hace_7]
+            else:
+                v_f = pd.DataFrame()
+            if not df_g.empty:
+                df_g["Fecha_dt"] = pd.to_datetime(df_g["Fecha"])
+                g_f = df_g[df_g["Fecha_dt"] >= hace_7]
+            else:
+                g_f = pd.DataFrame()
+
+        t_v = v_f["Total"].sum() if not v_f.empty else 0.0
+        t_g_bruta = v_f["Ganancia"].sum() if not v_f.empty else 0.0
+        t_gastos = g_f["Monto"].sum() if not g_f.empty else 0.0
+        t_neta = t_g_bruta - t_gastos
+
+        c1, c2, c3 = st.columns(3)
+        with c1: st.metric(label="💰 Vendido", value=f"S/ {t_v:.2f}")
+        with c2: st.metric(label="📉 Gastos", value=f"S/ {t_gastos:.2f}")
+        with c3: st.metric(label="🌟 Neta Acumulada", value=f"S/ {t_neta:.2f}")
+
+        st.markdown("---")
+        st.subheader("📋 Ventas del Periodo")
+        if not v_f.empty:
+            cols = [c for c in ["Fecha_Hora", "Producto", "Cantidad", "Total", "Ganancia", "Pago"] if c in v_f.columns]
+            st.dataframe(v_f[cols], use_container_width=True)
+        else:
+            st.info("No hay ventas en este periodo.")
