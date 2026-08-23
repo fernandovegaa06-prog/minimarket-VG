@@ -1,11 +1,16 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import pytz
 import urllib.parse
 
 st.set_page_config(page_title="Minimarket Vega", page_icon="🛒", layout="centered")
 
 NUMERO_WHATSAPP = "51984116361"
+ZONA_PERU = pytz.timezone("America/Lima")
+
+def obtener_tiempo_peru():
+    return datetime.now(ZONA_PERU)
 
 st.markdown("""
 <style>
@@ -21,24 +26,67 @@ st.markdown("""
     }
     .main-header {
         background: rgba(255, 255, 255, 0.95);
-        padding: 20px;
+        backdrop-filter: blur(10px);
+        padding: 20px 25px;
         border-radius: 12px;
         color: #0f766e;
         margin-bottom: 20px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     }
-    h1, h2, h3, p, label { color: #ffffff !important; }
-    .stDataFrame *, div[data-baseweb="select"] * { color: #1e293b !important; }
+    .main-header h1 { margin: 0; font-size: 26px; font-weight: 700; color: #0f766e; }
+    .main-header p { margin: 5px 0 0 0; font-size: 14px; color: #334155; }
+    .report-box {
+        background-color: rgba(255, 255, 255, 0.95);
+        border: 2px dashed #0d9488;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        color: #1e293b;
+    }
+    .stMarkdown, .stText, h1, h2, h3, p, label { color: #ffffff !important; }
+    .report-box *, .stDataFrame *, div[data-baseweb="select"] * { color: #1e293b !important; }
 </style>
 """, unsafe_allow_html=True)
+
+if 'autenticado' not in st.session_state:
+    st.session_state.autenticado = False
+
+if not st.session_state.autenticado:
+    st.markdown("""
+        <div style="text-align: center; padding: 30px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+            <h2 style="color: #0f766e !important;">🔐 Acceso Restringido</h2>
+            <p style="color: #475569 !important;">Minimarket Vega - Control de Inventario y Caja</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    password_ingresada = st.text_input("Contraseña de acceso:", type="password")
+    if st.button("Ingresar al Sistema", use_container_width=True):
+        if password_ingresada == "1234":
+            st.session_state.autenticado = True
+            st.rerun()
+        else:
+            st.error("Contraseña incorrecta. Inténtalo de nuevo (Contraseña: 1234).")
+    st.stop()
 
 if 'inventario' not in st.session_state:
     st.session_state.inventario = pd.DataFrame([
         {"Categoría": "Abarrotes", "Producto": "Arroz Costeño (kg)", "Precio Venta": 4.50, "Costo Compra": 3.80, "Stock": 25.0},
         {"Categoría": "Abarrotes", "Producto": "Azúcar Rubia (kg)", "Precio Venta": 4.00, "Costo Compra": 3.30, "Stock": 25.0},
+        {"Categoría": "Abarrotes", "Producto": "Fideos Don Vittorio (500g)", "Precio Venta": 3.20, "Costo Compra": 2.60, "Stock": 25.0},
         {"Categoría": "Abarrotes", "Producto": "Aceite Primor (1L)", "Precio Venta": 9.50, "Costo Compra": 8.20, "Stock": 25.0},
+        {"Categoría": "Abarrotes", "Producto": "Atún Florida (latas)", "Precio Venta": 5.50, "Costo Compra": 4.60, "Stock": 25.0},
         {"Categoría": "Lácteos", "Producto": "Leche Gloria Azul (tarro)", "Precio Venta": 4.80, "Costo Compra": 4.10, "Stock": 25.0},
+        {"Categoría": "Lácteos", "Producto": "Queso Fresco (kg)", "Precio Venta": 22.00, "Costo Compra": 18.00, "Stock": 25.0},
+        {"Categoría": "Lácteos", "Producto": "Yogurt Gloria (1L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
         {"Categoría": "Bebidas", "Producto": "Inca Kola (1.5L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
-        {"Categoría": "Bebidas", "Producto": "Agua San Luis (625ml)", "Precio Venta": 2.00, "Costo Compra": 1.30, "Stock": 25.0}
+        {"Categoría": "Bebidas", "Producto": "Coca Cola (1.5L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
+        {"Categoría": "Bebidas", "Producto": "Agua San Luis (625ml)", "Precio Venta": 2.00, "Costo Compra": 1.30, "Stock": 25.0},
+        {"Categoría": "Bebidas", "Producto": "Cerveza Pilsen (Botella 650ml)", "Precio Venta": 8.50, "Costo Compra": 7.20, "Stock": 25.0},
+        {"Categoría": "Golosinas", "Producto": "Galletas Sublime", "Precio Venta": 1.50, "Costo Compra": 1.10, "Stock": 25.0},
+        {"Categoría": "Golosinas", "Producto": "Papas Lays (Grande)", "Precio Venta": 7.00, "Costo Compra": 5.50, "Stock": 25.0},
+        {"Categoría": "Limpieza", "Producto": "Detergente Bolívar (1kg)", "Precio Venta": 11.50, "Costo Compra": 9.80, "Stock": 25.0},
+        {"Categoría": "Limpieza", "Producto": "Lejía Clorox (1L)", "Precio Venta": 5.00, "Costo Compra": 3.90, "Stock": 25.0}
     ])
 
 if 'ventas' not in st.session_state:
@@ -50,6 +98,9 @@ if 'gastos' not in st.session_state:
 with st.sidebar:
     st.markdown("### 🏪 Minimarket Vega")
     st.caption("Sistema de Gestión Comercial")
+    if st.button("🔒 Cerrar Sesión", use_container_width=True):
+        st.session_state.autenticado = False
+        st.rerun()
     st.markdown("---")
     menu = st.selectbox(
         "Seleccione Operación:", 
@@ -63,7 +114,7 @@ with st.sidebar:
     )
 
 if menu == "🛒 Registrar Venta":
-    st.markdown("""<div class="main-header"><h1>🛒 Caja y Registro de Ventas</h1><p>Control rápido de cobros, efectivo, Yape/Plin y ganancias.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="main-header"><h1>🛒 Caja y Registro de Ventas</h1><p>Control rápido de cobros, efectivo, Yape/Plin y ganancias del día.</p></div>""", unsafe_allow_html=True)
     lista_productos = st.session_state.inventario["Producto"].tolist()
     producto_seleccionado = st.selectbox("📦 Seleccione el producto:", lista_productos)
     prod_data = st.session_state.inventario[st.session_state.inventario["Producto"] == producto_seleccionado].iloc[0]
@@ -78,7 +129,7 @@ if menu == "🛒 Registrar Venta":
     if st.button("✅ Cobrar y Registrar Venta", use_container_width=True):
         if stock_actual >= cantidad:
             st.session_state.inventario.loc[st.session_state.inventario["Producto"] == producto_seleccionado, "Stock"] -= cantidad
-            ahora = datetime.now()
+            ahora = obtener_tiempo_peru()
             st.session_state.ventas.append({
                 "Fecha_Hora": ahora.strftime("%Y-%m-%d %H:%M"), "Fecha": ahora.strftime("%Y-%m-%d"),
                 "Producto": producto_seleccionado, "Cantidad": cantidad, "Total": total_cobrar,
@@ -97,10 +148,18 @@ elif menu == "📦 Ver Stock y Montos":
     with col1: st.metric(label="🏷️ Total Productos", value=len(inventario_df))
     with col2: st.metric(label="💵 Valor Total de Mercadería", value=f"S/ {valortotal_dinero:.2f}")
     st.markdown("---")
-    st.dataframe(inventario_df, use_container_width=True)
+    cat_elegida = st.selectbox("📂 Filtrar Inventario por Categoría:", ["Todas"] + list(inventario_df["Categoría"].unique()))
+    inventario_filtrado = inventario_df if cat_elegida == "Todas" else inventario_df[inventario_df["Categoría"] == cat_elegida]
+    st.dataframe(inventario_filtrado, use_container_width=True)
+    st.download_button(
+        label="📥 Descargar Reporte de Inventario (CSV)",
+        data=inventario_filtrado.to_csv(index=False).encode('utf-8'),
+        file_name=f"inventario_minimarket_vega_{obtener_tiempo_peru().strftime('%Y-%m-%d')}.csv",
+        mime="text/csv", use_container_width=True
+    )
 
 elif menu == "🛠️ Corregir Stock / Precios":
-    st.markdown("""<div class="main-header"><h1>🛠️ Corrección de Inventario</h1><p>Actualiza precios, costos o ajusta el stock de tus productos.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="main-header"><h1>🛠️ Corrección de Inventario</h1><p>Actualiza precios, costos o ajusta el stock.</p></div>""", unsafe_allow_html=True)
     prod_a_editar = st.selectbox("🔍 Selecciona el producto a corregir:", st.session_state.inventario["Producto"].tolist())
     fila_prod = st.session_state.inventario[st.session_state.inventario["Producto"] == prod_a_editar].iloc[0]
     st.info(f"📌 Estado actual de **{prod_a_editar}** ➔ Stock: {fila_prod['Stock']} | Precio Venta: S/ {fila_prod['Precio Venta']:.2f}")
@@ -118,11 +177,11 @@ elif menu == "📊 Cierre de Caja y Balance":
             desc_gasto = st.text_input("Motivo del gasto:")
             monto_gasto = st.number_input("Monto (S/):", min_value=0.0, step=0.50)
             if st.form_submit_button("Registrar Gasto") and desc_gasto:
-                ahora = datetime.now()
-                st.session_state.gastos.append({"Fecha": ahora.strftime("%Y-%m-%d"), "Descripción": desc_gasto, "Monto": monto_gasto})
+                ahora = obtener_tiempo_peru()
+                st.session_state.gastos.append({"Fecha_Hora": ahora.strftime("%Y-%m-%d %H:%M"), "Fecha": ahora.strftime("%Y-%m-%d"), "Descripción": desc_gasto, "Monto": monto_gasto})
                 st.success(f"Gasto de S/ {monto_gasto:.2f} registrado.")
 
-    fecha_hoy = datetime.now().strftime("%Y-%m-%d")
+    fecha_hoy = obtener_tiempo_peru().strftime("%Y-%m-%d")
     ventas_hoy = [v for v in st.session_state.ventas if v["Fecha"] == fecha_hoy]
     gastos_hoy = [g for g in st.session_state.gastos if g["Fecha"] == fecha_hoy]
 
@@ -140,6 +199,20 @@ elif menu == "📊 Cierre de Caja y Balance":
     with col3: st.metric(label="📉 Gastos", value=f"S/ {total_gastos_hoy:.2f}")
     st.success(f"🌟 **Ganancia Neta del Día:** S/ {ganancia_neta_hoy:.2f}")
 
+    if st.button("📄 Generar y Mostrar Reporte Diario Oficial", use_container_width=True):
+        st.markdown(f"""
+        <div class="report-box">
+            <h3 style="color: #0f766e; margin-top: 0;">🏪 MINIMARKET VEGA - REPORTE OFICIAL DE CAJA</h3>
+            <p><b>Fecha de Emisión:</b> {obtener_tiempo_peru().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            <hr style="border: 0; border-top: 1px solid #cbd5e1;">
+            <p><b>💰 Total de Ventas en el Día:</b> S/ {total_ventas_hoy:.2f}</p>
+            <p><b>💵 Ingresos en Efectivo:</b> S/ {efectivo_hoy:.2f}</p>
+            <p><b>📱 Ingresos por Yape / Plin:</b> S/ {yape_hoy:.2f}</p>
+            <p><b>📉 Total de Gastos Operativos:</b> S/ {total_gastos_hoy:.2f}</p>
+            <p><b>✨ Ganancia Neta Final:</b> S/ {ganancia_neta_hoy:.2f}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
     texto_wsp = f"*🏪 MINIMARKET VEGA - REPORTE DIARIO*\n📅 *Fecha:* {fecha_hoy}\n💰 *Total Vendido:* S/ {total_ventas_hoy:.2f}\n💵 *Efectivo:* S/ {efectivo_hoy:.2f}\n📱 *Yape / Plin:* S/ {yape_hoy:.2f}\n📉 *Total Gastos:* S/ {total_gastos_hoy:.2f}\n🌟 *Ganancia Neta:* S/ {ganancia_neta_hoy:.2f}\n"
     url_whatsapp = f"https://api.whatsapp.com/send?phone={NUMERO_WHATSAPP}&text={urllib.parse.quote(texto_wsp)}"
     st.markdown(f"""<a href="{url_whatsapp}" target="_blank" style="text-decoration: none;"><div style="background-color: #25d366; color: white; padding: 12px 20px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px; margin-top: 15px;">💬 Enviar Reporte a mi WhatsApp</div></a>""", unsafe_allow_html=True)
@@ -152,7 +225,7 @@ elif menu == "📅 Reporte Semanal y Mensual":
         df_v = pd.DataFrame(st.session_state.ventas)
         df_g = pd.DataFrame(st.session_state.gastos)
         tipo_rep = st.radio("Seleccione periodo:", ["📅 Mes Actual", "📆 Últimos 7 Días"], horizontal=True)
-        hoy = datetime.now()
+        hoy = obtener_tiempo_peru()
 
         if tipo_rep == "📅 Mes Actual":
             mes_str = hoy.strftime("%Y-%m")
