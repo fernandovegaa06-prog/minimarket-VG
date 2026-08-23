@@ -389,4 +389,59 @@ elif menu == "📊 Cierre de Caja y Balance":
 
     url_whatsapp = f"https://api.whatsapp.com/send?phone={NUMERO_WHATSAPP}&text={urllib.parse.quote(texto_wsp)}"
     
-    btn_html = '<a
+    btn_html = '<a href="' + url_whatsapp + '" target="_blank" style="text-decoration: none;">' \
+               '<div style="background-color: #25d366; color: white; padding: 14px 20px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-top: 15px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);">' \
+               '💬 Enviar Reporte a mi WhatsApp' \
+               '</div></a>'
+    st.markdown(btn_html, unsafe_allow_html=True)
+
+elif menu == "📅 Reporte Semanal y Mensual":
+    st.markdown("""
+        <div class="main-header">
+            <h1>📅 BALANCE SEMANAL Y MENSUAL 📈</h1>
+            <p>Visualiza la evolución de tus ventas y el acumulado de ganancias</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    if not st.session_state.ventas and not st.session_state.gastos:
+        st.warning("Todavía no hay suficientes registros para calcular reportes.")
+    else:
+        df_v = pd.DataFrame(st.session_state.ventas)
+        df_g = pd.DataFrame(st.session_state.gastos)
+        tipo_rep = st.radio("Seleccione periodo:", ["📅 Mes Actual", "📆 Últimos 7 Días"], horizontal=True)
+        hoy = obtener_tiempo_peru()
+        
+        if tipo_rep == "📅 Mes Actual":
+            mes_str = hoy.strftime("%Y-%m")
+            v_f = df_v[df_v["Fecha"].str.startswith(mes_str)] if not df_v.empty else pd.DataFrame()
+            g_f = df_g[df_g["Fecha"].str.startswith(mes_str)] if not df_g.empty else pd.DataFrame()
+        else:
+            hace_7 = pd.Timestamp(hoy.date()) - pd.Timedelta(days=7)
+            if not df_v.empty:
+                df_v["Fecha_dt"] = pd.to_datetime(df_v["Fecha"])
+                v_f = df_v[df_v["Fecha_dt"] >= hace_7]
+            else:
+                v_f = pd.DataFrame()
+            if not df_g.empty:
+                df_g["Fecha_dt"] = pd.to_datetime(df_g["Fecha"])
+                g_f = df_g[df_g["Fecha_dt"] >= hace_7]
+            else:
+                g_f = pd.DataFrame()
+                
+        t_v = v_f["Total"].sum() if not v_f.empty else 0.0
+        t_g_bruta = v_f["Ganancia"].sum() if not v_f.empty else 0.0
+        t_gastos = g_f["Monto"].sum() if not g_f.empty else 0.0
+        t_neta = t_g_bruta - t_gastos
+        
+        c1, c2, c3 = st.columns(3)
+        with c1: st.metric(label="💰 Vendido", value=f"S/ {t_v:.2f}")
+        with c2: st.metric(label="📉 Gastos", value=f"S/ {t_gastos:.2f}")
+        with c3: st.metric(label="🌟 Neta Acumulada", value=f"S/ {t_neta:.2f}")
+        
+        st.markdown("---")
+        st.subheader("📋 Ventas del Periodo")
+        if not v_f.empty:
+            cols = [c for c in ["Fecha_Hora", "Producto", "Cantidad", "Total", "Ganancia", "Pago", "Detalle"] if c in v_f.columns]
+            st.dataframe(v_f[cols], use_container_width=True)
+        else:
+            st.info("No hay ventas en este periodo.")
