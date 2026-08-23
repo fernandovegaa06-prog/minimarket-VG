@@ -381,4 +381,7 @@ elif menu == "📊 Cierre de Caja y Balance":
         
     texto_wsp = f"*🏪 MINIMARKET VG - REPORTE DIARIO*\n📅 *Fecha:* {fecha_hoy}\n💰 *Total Vendido:* S/ {total_ventas_hoy:.2f}\n💵 *Efectivo:* S/ {efectivo_hoy:.2f}\n📱 *Yape / Plin:* S/ {yape_hoy:.2f}\n📉 *Total Gastos:* S/ {total_gastos_hoy:.2f}\n🌟 *Ganancia Neta:* S/ {ganancia_neta_hoy:.2f}\n"
     url_whatsapp = f"https://api.whatsapp.com/send?phone={NUMERO_WHATSAPP}&text={urllib.parse.quote(texto_wsp)}"
-    st.markdown(f"""<a href="{url_whatsapp}" target="_blank" style="text-decoration: none;"><div style="background-color: #25d366; color: white; padding: 14px 20px; bor
+    
+    btn_html = f'''
+    <a href="{url_whatsapp}" target="_blank" style="text-decoration: none;">
+        <div style="background-color: #25d366; color: white; paddi
