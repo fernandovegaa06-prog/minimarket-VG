@@ -12,48 +12,44 @@ ZONA_PERU = pytz.timezone("America/Lima")
 def obtener_tiempo_peru():
     return datetime.now(ZONA_PERU)
 
-# Diseño y Estilos Visuales Mejorados
+# Estilo visual limpio, moderno y de alta legibilidad
 st.markdown("""
 <style>
     .stApp {
-        background: linear-gradient(135deg, #0f766e 0%, #115e59 50%, #042f2e 100%);
-        background-attachment: fixed;
+        background-color: #f1f5f9;
     }
     .main-header {
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(240, 253, 250, 0.95));
-        border-left: 6px solid #0d9488;
-        padding: 22px 25px;
-        border-radius: 12px;
-        color: #0f766e;
+        background: linear-gradient(135deg, #0f766e, #115e59);
+        padding: 26px;
+        border-radius: 14px;
+        color: white;
         margin-bottom: 22px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 6px 18px rgba(15, 118, 110, 0.25);
+        text-align: center;
     }
-    .main-header h1 { margin: 0; font-size: 28px; font-weight: 800; color: #0f766e !important; }
-    .main-header p { margin: 6px 0 0 0; font-size: 14px; color: #334155 !important; font-weight: 500; }
+    .main-header h1 { margin: 0; font-size: 32px; font-weight: 800; color: #ffffff !important; letter-spacing: 0.5px; }
+    .main-header p { margin: 8px 0 0 0; font-size: 15px; color: #ccfbf1 !important; font-weight: 500; }
     
     .report-box {
-        background-color: rgba(255, 255, 255, 0.96);
+        background-color: #ffffff;
         border: 2px dashed #0d9488;
         padding: 22px;
         border-radius: 12px;
         margin-top: 15px;
         margin-bottom: 15px;
-        color: #1e293b;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
-    .report-box h3, .report-box p, .report-box b { color: #1e293b !important; }
     
-    /* Mejoras de legibilidad en textos generales */
-    .stMarkdown, .stText, h1, h2, h3, p, label { color: #f8fafc !important; }
-    .stDataFrame *, div[data-baseweb="select"] * { color: #1e293b !important; }
+    /* Forzar texto oscuro y legible */
+    .stMarkdown, .stText, h1, h2, h3, p, label, span { color: #1e293b !important; }
     
-    /* Tarjetas de login y contenedores */
     .login-card {
-        background: rgba(255, 255, 255, 0.95);
-        padding: 35px;
-        border-radius: 16px;
-        box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+        background: #ffffff;
+        padding: 40px;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
         text-align: center;
+        border: 1px solid #e2e8f0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -64,9 +60,8 @@ if 'autenticado' not in st.session_state:
 if not st.session_state.autenticado:
     st.markdown("""
         <div class="login-card">
-            <h2 style="color: #0f766e !important; margin-bottom: 5px;">🛒 Minimarket Vega</h2>
-            <p style="color: #64748b !important; font-size: 15px;">Sistema de Control de Inventario y Caja</p>
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+            <h1 style="color: #0f766e !important; font-size: 34px; margin-bottom: 5px;">🛒 MINIMARKET VG 🛍️</h1>
+            <p style="color: #64748b !important; font-size: 16px; font-weight: 600;">Control de Inventario y Caja 🏪</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -106,7 +101,8 @@ if 'gastos' not in st.session_state:
     st.session_state.gastos = []
 
 with st.sidebar:
-    st.markdown("### 🏪 Minimarket Vega")
+    st.markdown("<h2 style='text-align: center; color: #0f766e;'>🏪 MINIMARKET VG 🛒</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; font-weight: 600; color: #334155;'>📦 Arroz • 🛢️ Aceite • 🥛 Leche</p>", unsafe_allow_html=True)
     st.caption("Panel de Control Comercial")
     if st.button("🔒 Cerrar Sesión", use_container_width=True):
         st.session_state.autenticado = False
@@ -126,8 +122,8 @@ with st.sidebar:
 if menu == "🛒 Registrar Venta":
     st.markdown("""
         <div class="main-header">
-            <h1>🛒 Caja y Registro de Ventas</h1>
-            <p>Control rápido de cobros, pagos en efectivo o Yape/Plin y ganancias al instante.</p>
+            <h1>🛒 MINIMARKET VG - CAJA Y VENTAS 🛍️</h1>
+            <p>📦 Control rápido de cobros, abarrotes, bebidas y ganancias al instante 💰</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -162,8 +158,8 @@ if menu == "🛒 Registrar Venta":
 elif menu == "📦 Ver Stock y Montos":
     st.markdown("""
         <div class="main-header">
-            <h1>📦 Inventario y Valorización</h1>
-            <p>Supervisa tu mercadería en almacén y valora tu capital en dinero.</p>
+            <h1>📦 INVENTARIO Y ABARROTES 🛒</h1>
+            <p>📊 Supervisa tu mercadería en almacén y valora tu capital en dinero 💵</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -183,15 +179,15 @@ elif menu == "📦 Ver Stock y Montos":
     st.download_button(
         label="📥 Descargar Reporte de Inventario (CSV)",
         data=inventario_filtrado.to_csv(index=False).encode('utf-8'),
-        file_name=f"inventario_minimarket_vega_{obtener_tiempo_peru().strftime('%Y-%m-%d')}.csv",
+        file_name=f"inventario_minimarket_vg_{obtener_tiempo_peru().strftime('%Y-%m-%d')}.csv",
         mime="text/csv", use_container_width=True
     )
 
 elif menu == "🛠️ Corregir Stock / Precios":
     st.markdown("""
         <div class="main-header">
-            <h1>🛠️ Corrección de Inventario</h1>
-            <p>Actualiza de forma rápida precios, costos de compra o ajusta el stock físico.</p>
+            <h1>🛠️ CORRECCIÓN DE INVENTARIO 📝</h1>
+            <p>⚙️ Actualiza de forma rápida precios, costos o ajusta tu mercadería física 🏷️</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -210,8 +206,8 @@ elif menu == "🛠️ Corregir Stock / Precios":
 elif menu == "📊 Cierre de Caja y Balance":
     st.markdown("""
         <div class="main-header">
-            <h1>📊 Cierre de Caja y Balance Diario</h1>
-            <p>Resumen final de ingresos, desglose por método de pago y ganancia neta.</p>
+            <h1>📊 CIERRE DE CAJA Y BALANCE 💰</h1>
+            <p>📈 Resumen final de ingresos, efectivo, Yape/Plin y ganancia neta 🌟</p>
         </div>
     """, unsafe_allow_html=True)
     
@@ -246,8 +242,8 @@ elif menu == "📊 Cierre de Caja y Balance":
     if st.button("📄 Generar y Mostrar Reporte Diario Oficial", use_container_width=True):
         st.markdown(f"""
         <div class="report-box">
-            <h3 style="color: #0f766e; margin-top: 0;">🏪 MINIMARKET VEGA - REPORTE OFICIAL DE CAJA</h3>
-            <p><b>Fecha de Emisión:</b> {obtener_tiempo_peru().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            <h3 style="color: #0f766e; margin-top: 0;">🏪 MINIMARKET VG - REPORTE OFICIAL DE CAJA</h3>
+            <p><b>📅 Fecha de Emisión:</b> {obtener_tiempo_peru().strftime('%Y-%m-%d %H:%M:%S')}</p>
             <hr style="border: 0; border-top: 1px solid #cbd5e1;">
             <p><b>💰 Total de Ventas en el Día:</b> S/ {total_ventas_hoy:.2f}</p>
             <p><b>💵 Ingresos en Efectivo:</b> S/ {efectivo_hoy:.2f}</p>
@@ -257,15 +253,15 @@ elif menu == "📊 Cierre de Caja y Balance":
         </div>
         """, unsafe_allow_html=True)
 
-    texto_wsp = f"*🏪 MINIMARKET VEGA - REPORTE DIARIO*\n📅 *Fecha:* {fecha_hoy}\n💰 *Total Vendido:* S/ {total_ventas_hoy:.2f}\n💵 *Efectivo:* S/ {efectivo_hoy:.2f}\n📱 *Yape / Plin:* S/ {yape_hoy:.2f}\n📉 *Total Gastos:* S/ {total_gastos_hoy:.2f}\n🌟 *Ganancia Neta:* S/ {ganancia_neta_hoy:.2f}\n"
+    texto_wsp = f"*🏪 MINIMARKET VG - REPORTE DIARIO*\n📅 *Fecha:* {fecha_hoy}\n💰 *Total Vendido:* S/ {total_ventas_hoy:.2f}\n💵 *Efectivo:* S/ {efectivo_hoy:.2f}\n📱 *Yape / Plin:* S/ {yape_hoy:.2f}\n📉 *Total Gastos:* S/ {total_gastos_hoy:.2f}\n🌟 *Ganancia Neta:* S/ {ganancia_neta_hoy:.2f}\n"
     url_whatsapp = f"https://api.whatsapp.com/send?phone={NUMERO_WHATSAPP}&text={urllib.parse.quote(texto_wsp)}"
     st.markdown(f"""<a href="{url_whatsapp}" target="_blank" style="text-decoration: none;"><div style="background-color: #25d366; color: white; padding: 14px 20px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-top: 15px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);">💬 Enviar Reporte a mi WhatsApp</div></a>""", unsafe_allow_html=True)
 
 elif menu == "📅 Reporte Semanal y Mensual":
     st.markdown("""
         <div class="main-header">
-            <h1>📅 Balance Semanal y Mensual</h1>
-            <p>Visualiza la evolución de tus ventas y el acumulado de ganancias por periodos.</p>
+            <h1>📅 BALANCE SEMANAL Y MENSUAL 📈</h1>
+            <p>📊 Visualiza la evolución de tus ventas y el acumulado de ganancias 🌟</p>
         </div>
     """, unsafe_allow_html=True)
     
