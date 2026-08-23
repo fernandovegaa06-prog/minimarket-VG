@@ -3,16 +3,83 @@ import pandas as pd
 from datetime import datetime
 import pytz
 import urllib.parse
+import os
+import json
 
 st.set_page_config(page_title="Minimarket VG", page_icon="🛒", layout="centered")
 
 NUMERO_WHATSAPP = "51984116361"
 ZONA_PERU = pytz.timezone("America/Lima")
+ARCH_INVENTARIO = "inventario_vg.json"
+ARCH_VENTAS = "ventas_vg.json"
+ARCH_GASTOS = "gastos_vg.json"
 
 def obtener_tiempo_peru():
     return datetime.now(ZONA_PERU)
 
-# Estilo visual con fondo cálido y elegante, tipografía legible
+# Funciones de persistencia en archivos locales (Memoria permanente)
+def cargar_datos():
+    # Inventario inicial por defecto
+    inv_inicial = [
+        {"Categoría": "Abarrotes", "Producto": "Arroz Costeño (kg)", "Precio Venta": 4.50, "Costo Compra": 3.80, "Stock": 25.0},
+        {"Categoría": "Abarrotes", "Producto": "Azúcar Rubia (kg)", "Precio Venta": 4.00, "Costo Compra": 3.30, "Stock": 25.0},
+        {"Categoría": "Abarrotes", "Producto": "Fideos Don Vittorio (500g)", "Precio Venta": 3.20, "Costo Compra": 2.60, "Stock": 25.0},
+        {"Categoría": "Abarrotes", "Producto": "Aceite Primor (1L)", "Precio Venta": 9.50, "Costo Compra": 8.20, "Stock": 25.0},
+        {"Categoría": "Abarrotes", "Producto": "Atún Florida (latas)", "Precio Venta": 5.50, "Costo Compra": 4.60, "Stock": 25.0},
+        {"Categoría": "Lácteos", "Producto": "Leche Gloria Azul (tarro)", "Precio Venta": 4.80, "Costo Compra": 4.10, "Stock": 25.0},
+        {"Categoría": "Lácteos", "Producto": "Queso Fresco (kg)", "Precio Venta": 22.00, "Costo Compra": 18.00, "Stock": 25.0},
+        {"Categoría": "Lácteos", "Producto": "Yogurt Gloria (1L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
+        {"Categoría": "Bebidas", "Producto": "Inca Kola (1.5L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
+        {"Categoría": "Bebidas", "Producto": "Coca Cola (1.5L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
+        {"Categoría": "Bebidas", "Producto": "Agua San Luis (625ml)", "Precio Venta": 2.00, "Costo Compra": 1.30, "Stock": 25.0},
+        {"Categoría": "Bebidas", "Producto": "Cerveza Pilsen (Botella 650ml)", "Precio Venta": 8.50, "Costo Compra": 7.20, "Stock": 25.0},
+        {"Categoría": "Golosinas", "Producto": "Galletas Sublime", "Precio Venta": 1.50, "Costo Compra": 1.10, "Stock": 25.0},
+        {"Categoría": "Golosinas", "Producto": "Papas Lays (Grande)", "Precio Venta": 7.00, "Costo Compra": 5.50, "Stock": 25.0},
+        {"Categoría": "Limpieza", "Producto": "Detergente Bolívar (1kg)", "Precio Venta": 11.50, "Costo Compra": 9.80, "Stock": 25.0},
+        {"Categoría": "Limpieza", "Producto": "Lejía Clorox (1L)", "Precio Venta": 5.00, "Costo Compra": 3.90, "Stock": 25.0}
+    ]
+    
+    if os.path.exists(ARCH_INVENTARIO):
+        try:
+            df_inv = pd.read_json(ARCH_INVENTARIO)
+        except:
+            df_inv = pd.DataFrame(inv_inicial)
+    else:
+        df_inv = pd.DataFrame(inv_inicial)
+        df_inv.to_json(ARCH_INVENTARIO, orient="records", indent=4)
+        
+    if os.path.exists(ARCH_VENTAS):
+        try:
+            with open(ARCH_VENTAS, "r", encoding="utf-8") as f:
+                ventas = json.load(f)
+        except:
+            ventas = []
+    else:
+        ventas = []
+        
+    if os.path.exists(ARCH_GASTOS):
+        try:
+            with open(ARCH_GASTOS, "r", encoding="utf-8") as f:
+                gastos = json.load(f)
+        except:
+            gastos = []
+    else:
+        gastos = []
+        
+    return df_inv, ventas, gastos
+
+def guardar_inventario(df):
+    df.to_json(ARCH_INVENTARIO, orient="records", indent=4)
+
+def guardar_ventas(ventas):
+    with open(ARCH_VENTAS, "w", encoding="utf-8") as f:
+        json.dump(ventas, f, ensure_ascii=False, indent=4)
+
+def guardar_gastos(gastos):
+    with open(ARCH_GASTOS, "w", encoding="utf-8") as f:
+        json.dump(gastos, f, ensure_ascii=False, indent=4)
+
+# Estilo visual moderno y limpio con fondo cálido
 st.markdown("""
 <style>
     .stApp {
@@ -40,7 +107,6 @@ st.markdown("""
         box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
     
-    /* Forzar texto oscuro y legible en toda la app */
     .stMarkdown, .stText, h1, h2, h3, p, label, span { color: #1e293b !important; }
     
     .login-card {
@@ -56,6 +122,13 @@ st.markdown("""
 
 if 'autenticado' not in st.session_state:
     st.session_state.autenticado = False
+
+# Cargar datos persistentes
+if 'inventario' not in st.session_state or 'ventas' not in st.session_state or 'gastos' not in st.session_state:
+    inv_arga, ventas_arga, gastos_arga = cargar_datos()
+    st.session_state.inventario = inv_arga
+    st.session_state.ventas = ventas_arga
+    st.session_state.gastos = gastos_arga
 
 if not st.session_state.autenticado:
     st.markdown("""
@@ -74,35 +147,8 @@ if not st.session_state.autenticado:
             st.error("❌ Contraseña incorrecta. (Prueba con: 1234)")
     st.stop()
 
-if 'inventario' not in st.session_state:
-    st.session_state.inventario = pd.DataFrame([
-        {"Categoría": "Abarrotes", "Producto": "Arroz Costeño (kg)", "Precio Venta": 4.50, "Costo Compra": 3.80, "Stock": 25.0},
-        {"Categoría": "Abarrotes", "Producto": "Azúcar Rubia (kg)", "Precio Venta": 4.00, "Costo Compra": 3.30, "Stock": 25.0},
-        {"Categoría": "Abarrotes", "Producto": "Fideos Don Vittorio (500g)", "Precio Venta": 3.20, "Costo Compra": 2.60, "Stock": 25.0},
-        {"Categoría": "Abarrotes", "Producto": "Aceite Primor (1L)", "Precio Venta": 9.50, "Costo Compra": 8.20, "Stock": 25.0},
-        {"Categoría": "Abarrotes", "Producto": "Atún Florida (latas)", "Precio Venta": 5.50, "Costo Compra": 4.60, "Stock": 25.0},
-        {"Categoría": "Lácteos", "Producto": "Leche Gloria Azul (tarro)", "Precio Venta": 4.80, "Costo Compra": 4.10, "Stock": 25.0},
-        {"Categoría": "Lácteos", "Producto": "Queso Fresco (kg)", "Precio Venta": 22.00, "Costo Compra": 18.00, "Stock": 25.0},
-        {"Categoría": "Lácteos", "Producto": "Yogurt Gloria (1L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
-        {"Categoría": "Bebidas", "Producto": "Inca Kola (1.5L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
-        {"Categoría": "Bebidas", "Producto": "Coca Cola (1.5L)", "Precio Venta": 7.50, "Costo Compra": 6.20, "Stock": 25.0},
-        {"Categoría": "Bebidas", "Producto": "Agua San Luis (625ml)", "Precio Venta": 2.00, "Costo Compra": 1.30, "Stock": 25.0},
-        {"Categoría": "Bebidas", "Producto": "Cerveza Pilsen (Botella 650ml)", "Precio Venta": 8.50, "Costo Compra": 7.20, "Stock": 25.0},
-        {"Categoría": "Golosinas", "Producto": "Galletas Sublime", "Precio Venta": 1.50, "Costo Compra": 1.10, "Stock": 25.0},
-        {"Categoría": "Golosinas", "Producto": "Papas Lays (Grande)", "Precio Venta": 7.00, "Costo Compra": 5.50, "Stock": 25.0},
-        {"Categoría": "Limpieza", "Producto": "Detergente Bolívar (1kg)", "Precio Venta": 11.50, "Costo Compra": 9.80, "Stock": 25.0},
-        {"Categoría": "Limpieza", "Producto": "Lejía Clorox (1L)", "Precio Venta": 5.00, "Costo Compra": 3.90, "Stock": 25.0}
-    ])
-
-if 'ventas' not in st.session_state:
-    st.session_state.ventas = []
-
-if 'gastos' not in st.session_state:
-    st.session_state.gastos = []
-
 with st.sidebar:
     st.markdown("<h2 style='text-align: center; color: #0f766e;'>🏪 MINIMARKET VG 🛒</h2>", unsafe_allow_html=True)
-    # Imagen referencial bonita en la barra lateral
     st.image("https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=500&q=80", caption="Tu Bodega de Confianza", use_container_width=True)
     st.caption("Panel de Control Comercial")
     if st.button("🔒 Cerrar Sesión", use_container_width=True):
@@ -128,7 +174,6 @@ if menu == "🛒 Registrar Venta":
         </div>
     """, unsafe_allow_html=True)
     
-    # Imagen ilustrativa de productos de abarrotes al costado/arriba
     st.image("https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=800&q=80", use_container_width=True)
     
     lista_productos = st.session_state.inventario["Producto"].tolist()
@@ -155,7 +200,10 @@ if menu == "🛒 Registrar Venta":
                 "Producto": producto_seleccionado, "Cantidad": cantidad, "Total": total_cobrar,
                 "Ganancia": ganancia_estimada, "Pago": metodo_pago
             })
-            st.success("🎉 ¡Venta registrada con éxito y stock descontado!")
+            # Guardar en persistencia local
+            guardar_inventario(st.session_state.inventario)
+            guardar_ventas(st.session_state.ventas)
+            st.success("🎉 ¡Venta registrada con éxito y stock guardado permanentemente!")
         else:
             st.error("❌ No hay suficiente stock disponible para esta venta.")
 
@@ -205,7 +253,8 @@ elif menu == "🛠️ Corregir Stock / Precios":
     
     if st.button("💾 Guardar Cambios", use_container_width=True):
         st.session_state.inventario.loc[st.session_state.inventario["Producto"] == prod_a_editar, ["Stock", "Precio Venta", "Costo Compra"]] = [nuevo_stock, nuevo_precio, nuevo_costo]
-        st.success(f"✅ ¡Los datos de '{prod_a_editar}' han sido actualizados con éxito!")
+        guardar_inventario(st.session_state.inventario)
+        st.success(f"✅ ¡Los datos de '{prod_a_editar}' han sido actualizados y guardados con éxito!")
 
 elif menu == "📊 Cierre de Caja y Balance":
     st.markdown("""
@@ -222,7 +271,8 @@ elif menu == "📊 Cierre de Caja y Balance":
             if st.form_submit_button("Registrar Gasto") and desc_gasto:
                 ahora = obtener_tiempo_peru()
                 st.session_state.gastos.append({"Fecha_Hora": ahora.strftime("%Y-%m-%d %H:%M"), "Fecha": ahora.strftime("%Y-%m-%d"), "Descripción": desc_gasto, "Monto": monto_gasto})
-                st.success(f"Gasto de S/ {monto_gasto:.2f} registrado.")
+                guardar_gastos(st.session_state.gastos)
+                st.success(f"Gasto de S/ {monto_gasto:.2f} registrado y guardado.")
 
     fecha_hoy = obtener_tiempo_peru().strftime("%Y-%m-%d")
     ventas_hoy = [v for v in st.session_state.ventas if v["Fecha"] == fecha_hoy]
@@ -292,7 +342,7 @@ elif menu == "📅 Reporte Semanal y Mensual":
                 df_g["Fecha_dt"] = pd.to_datetime(df_g["Fecha"])
                 g_f = df_g[df_g["Fecha_dt"] >= hace_7]
             else:
-                g_f = df_g.empty
+                g_f = pd.DataFrame()
 
         t_v = v_f["Total"].sum() if not v_f.empty else 0.0
         t_g_bruta = v_f["Ganancia"].sum() if not v_f.empty else 0.0
