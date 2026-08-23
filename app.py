@@ -12,40 +12,49 @@ ZONA_PERU = pytz.timezone("America/Lima")
 def obtener_tiempo_peru():
     return datetime.now(ZONA_PERU)
 
+# Diseño y Estilos Visuales Mejorados
 st.markdown("""
 <style>
     .stApp {
-        background: linear-gradient(-45deg, #0f766e, #115e59, #0d9488, #134e4a);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
-    }
-    @keyframes gradientBG {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        background: linear-gradient(135deg, #0f766e 0%, #115e59 50%, #042f2e 100%);
+        background-attachment: fixed;
     }
     .main-header {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        padding: 20px 25px;
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(240, 253, 250, 0.95));
+        border-left: 6px solid #0d9488;
+        padding: 22px 25px;
         border-radius: 12px;
         color: #0f766e;
-        margin-bottom: 20px;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        margin-bottom: 22px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
-    .main-header h1 { margin: 0; font-size: 26px; font-weight: 700; color: #0f766e; }
-    .main-header p { margin: 5px 0 0 0; font-size: 14px; color: #334155; }
+    .main-header h1 { margin: 0; font-size: 28px; font-weight: 800; color: #0f766e !important; }
+    .main-header p { margin: 6px 0 0 0; font-size: 14px; color: #334155 !important; font-weight: 500; }
+    
     .report-box {
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: rgba(255, 255, 255, 0.96);
         border: 2px dashed #0d9488;
-        padding: 20px;
-        border-radius: 10px;
+        padding: 22px;
+        border-radius: 12px;
         margin-top: 15px;
         margin-bottom: 15px;
         color: #1e293b;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
-    .stMarkdown, .stText, h1, h2, h3, p, label { color: #ffffff !important; }
-    .report-box *, .stDataFrame *, div[data-baseweb="select"] * { color: #1e293b !important; }
+    .report-box h3, .report-box p, .report-box b { color: #1e293b !important; }
+    
+    /* Mejoras de legibilidad en textos generales */
+    .stMarkdown, .stText, h1, h2, h3, p, label { color: #f8fafc !important; }
+    .stDataFrame *, div[data-baseweb="select"] * { color: #1e293b !important; }
+    
+    /* Tarjetas de login y contenedores */
+    .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 35px;
+        border-radius: 16px;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+        text-align: center;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -54,19 +63,20 @@ if 'autenticado' not in st.session_state:
 
 if not st.session_state.autenticado:
     st.markdown("""
-        <div style="text-align: center; padding: 30px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
-            <h2 style="color: #0f766e !important;">🔐 Acceso Restringido</h2>
-            <p style="color: #475569 !important;">Minimarket Vega - Control de Inventario y Caja</p>
+        <div class="login-card">
+            <h2 style="color: #0f766e !important; margin-bottom: 5px;">🛒 Minimarket Vega</h2>
+            <p style="color: #64748b !important; font-size: 15px;">Sistema de Control de Inventario y Caja</p>
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;">
         </div>
     """, unsafe_allow_html=True)
     
-    password_ingresada = st.text_input("Contraseña de acceso:", type="password")
-    if st.button("Ingresar al Sistema", use_container_width=True):
+    password_ingresada = st.text_input("🔑 Ingrese su contraseña de acceso:", type="password")
+    if st.button("🚀 Ingresar al Sistema", use_container_width=True):
         if password_ingresada == "1234":
             st.session_state.autenticado = True
             st.rerun()
         else:
-            st.error("Contraseña incorrecta. Inténtalo de nuevo (Contraseña: 1234).")
+            st.error("❌ Contraseña incorrecta. (Prueba con: 1234)")
     st.stop()
 
 if 'inventario' not in st.session_state:
@@ -97,7 +107,7 @@ if 'gastos' not in st.session_state:
 
 with st.sidebar:
     st.markdown("### 🏪 Minimarket Vega")
-    st.caption("Sistema de Gestión Comercial")
+    st.caption("Panel de Control Comercial")
     if st.button("🔒 Cerrar Sesión", use_container_width=True):
         st.session_state.autenticado = False
         st.rerun()
@@ -114,18 +124,28 @@ with st.sidebar:
     )
 
 if menu == "🛒 Registrar Venta":
-    st.markdown("""<div class="main-header"><h1>🛒 Caja y Registro de Ventas</h1><p>Control rápido de cobros, efectivo, Yape/Plin y ganancias del día.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="main-header">
+            <h1>🛒 Caja y Registro de Ventas</h1>
+            <p>Control rápido de cobros, pagos en efectivo o Yape/Plin y ganancias al instante.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
     lista_productos = st.session_state.inventario["Producto"].tolist()
     producto_seleccionado = st.selectbox("📦 Seleccione el producto:", lista_productos)
     prod_data = st.session_state.inventario[st.session_state.inventario["Producto"] == producto_seleccionado].iloc[0]
     stock_actual, precio_venta, costo_compra, categoria_prod = prod_data["Stock"], prod_data["Precio Venta"], prod_data["Costo Compra"], prod_data["Categoría"]
+    
     st.info(f"📂 Categoría: **{categoria_prod}**  |  🏷️ Precio Venta: **S/ {precio_venta:.2f}**")
     cantidad = st.number_input(f"⚖️ Cantidad (Stock disponible: {stock_actual}):", min_value=0.5, max_value=float(stock_actual) if stock_actual > 0 else 1.0, value=1.0, step=0.5)
     metodo_pago = st.radio("💳 ¿Cómo pagó el cliente?", ["Efectivo", "Yape / Plin"], horizontal=True)
+    
     total_cobrar, ganancia_estimada = cantidad * precio_venta, cantidad * (precio_venta - costo_compra)
+    
     col_a, col_b = st.columns(2)
     with col_a: st.metric(label="💰 Total a Cobrar", value=f"S/ {total_cobrar:.2f}")
     with col_b: st.metric(label="✨ Ganancia Estimada", value=f"S/ {ganancia_estimada:.2f}")
+    
     if st.button("✅ Cobrar y Registrar Venta", use_container_width=True):
         if stock_actual >= cantidad:
             st.session_state.inventario.loc[st.session_state.inventario["Producto"] == producto_seleccionado, "Stock"] -= cantidad
@@ -140,16 +160,25 @@ if menu == "🛒 Registrar Venta":
             st.error("❌ No hay suficiente stock disponible para esta venta.")
 
 elif menu == "📦 Ver Stock y Montos":
-    st.markdown("""<div class="main-header"><h1>📦 Inventario y Valorización</h1><p>Supervisa tu mercadería en almacén valorizada en dinero.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="main-header">
+            <h1>📦 Inventario y Valorización</h1>
+            <p>Supervisa tu mercadería en almacén y valora tu capital en dinero.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
     inventario_df = st.session_state.inventario.copy()
     inventario_df["Valor Total en Stock (S/)"] = inventario_df["Stock"] * inventario_df["Precio Venta"]
     valortotal_dinero = inventario_df["Valor Total en Stock (S/)"].sum()
+    
     col1, col2 = st.columns(2)
     with col1: st.metric(label="🏷️ Total Productos", value=len(inventario_df))
     with col2: st.metric(label="💵 Valor Total de Mercadería", value=f"S/ {valortotal_dinero:.2f}")
+    
     st.markdown("---")
     cat_elegida = st.selectbox("📂 Filtrar Inventario por Categoría:", ["Todas"] + list(inventario_df["Categoría"].unique()))
     inventario_filtrado = inventario_df if cat_elegida == "Todas" else inventario_df[inventario_df["Categoría"] == cat_elegida]
+    
     st.dataframe(inventario_filtrado, use_container_width=True)
     st.download_button(
         label="📥 Descargar Reporte de Inventario (CSV)",
@@ -159,19 +188,33 @@ elif menu == "📦 Ver Stock y Montos":
     )
 
 elif menu == "🛠️ Corregir Stock / Precios":
-    st.markdown("""<div class="main-header"><h1>🛠️ Corrección de Inventario</h1><p>Actualiza precios, costos o ajusta el stock.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="main-header">
+            <h1>🛠️ Corrección de Inventario</h1>
+            <p>Actualiza de forma rápida precios, costos de compra o ajusta el stock físico.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
     prod_a_editar = st.selectbox("🔍 Selecciona el producto a corregir:", st.session_state.inventario["Producto"].tolist())
     fila_prod = st.session_state.inventario[st.session_state.inventario["Producto"] == prod_a_editar].iloc[0]
+    
     st.info(f"📌 Estado actual de **{prod_a_editar}** ➔ Stock: {fila_prod['Stock']} | Precio Venta: S/ {fila_prod['Precio Venta']:.2f}")
     nuevo_stock = st.number_input("📦 Stock exacto:", value=float(fila_prod["Stock"]), step=1.0)
     nuevo_precio = st.number_input("🏷️ Precio de Venta (S/):", value=float(fila_prod["Precio Venta"]), step=0.10)
     nuevo_costo = st.number_input("📉 Costo de Compra (S/):", value=float(fila_prod["Costo Compra"]), step=0.10)
+    
     if st.button("💾 Guardar Cambios", use_container_width=True):
         st.session_state.inventario.loc[st.session_state.inventario["Producto"] == prod_a_editar, ["Stock", "Precio Venta", "Costo Compra"]] = [nuevo_stock, nuevo_precio, nuevo_costo]
         st.success(f"✅ ¡Los datos de '{prod_a_editar}' han sido actualizados con éxito!")
 
 elif menu == "📊 Cierre de Caja y Balance":
-    st.markdown("""<div class="main-header"><h1>📊 Cierre de Caja y Balance Diario</h1><p>Resumen final de ingresos, gastos y ganancia neta.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="main-header">
+            <h1>📊 Cierre de Caja y Balance Diario</h1>
+            <p>Resumen final de ingresos, desglose por método de pago y ganancia neta.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
     with st.expander("💸 Registrar Gasto del Día"):
         with st.form("form_gastos"):
             desc_gasto = st.text_input("Motivo del gasto:")
@@ -197,6 +240,7 @@ elif menu == "📊 Cierre de Caja y Balance":
     with col1: st.metric(label="💰 Total Vendido", value=f"S/ {total_ventas_hoy:.2f}")
     with col2: st.metric(label="💵 Efec / 📱 Yape", value=f"S/ {efectivo_hoy:.1f} / S/ {yape_hoy:.1f}")
     with col3: st.metric(label="📉 Gastos", value=f"S/ {total_gastos_hoy:.2f}")
+    
     st.success(f"🌟 **Ganancia Neta del Día:** S/ {ganancia_neta_hoy:.2f}")
 
     if st.button("📄 Generar y Mostrar Reporte Diario Oficial", use_container_width=True):
@@ -215,10 +259,16 @@ elif menu == "📊 Cierre de Caja y Balance":
 
     texto_wsp = f"*🏪 MINIMARKET VEGA - REPORTE DIARIO*\n📅 *Fecha:* {fecha_hoy}\n💰 *Total Vendido:* S/ {total_ventas_hoy:.2f}\n💵 *Efectivo:* S/ {efectivo_hoy:.2f}\n📱 *Yape / Plin:* S/ {yape_hoy:.2f}\n📉 *Total Gastos:* S/ {total_gastos_hoy:.2f}\n🌟 *Ganancia Neta:* S/ {ganancia_neta_hoy:.2f}\n"
     url_whatsapp = f"https://api.whatsapp.com/send?phone={NUMERO_WHATSAPP}&text={urllib.parse.quote(texto_wsp)}"
-    st.markdown(f"""<a href="{url_whatsapp}" target="_blank" style="text-decoration: none;"><div style="background-color: #25d366; color: white; padding: 12px 20px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 16px; margin-top: 15px;">💬 Enviar Reporte a mi WhatsApp</div></a>""", unsafe_allow_html=True)
+    st.markdown(f"""<a href="{url_whatsapp}" target="_blank" style="text-decoration: none;"><div style="background-color: #25d366; color: white; padding: 14px 20px; border-radius: 10px; text-align: center; font-weight: bold; font-size: 16px; margin-top: 15px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);">💬 Enviar Reporte a mi WhatsApp</div></a>""", unsafe_allow_html=True)
 
 elif menu == "📅 Reporte Semanal y Mensual":
-    st.markdown("""<div class="main-header"><h1>📅 Balance Semanal y Mensual</h1><p>Evolución de ventas y ganancias acumuladas.</p></div>""", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="main-header">
+            <h1>📅 Balance Semanal y Mensual</h1>
+            <p>Visualiza la evolución de tus ventas y el acumulado de ganancias por periodos.</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
     if not st.session_state.ventas and not st.session_state.gastos:
         st.warning("Todavía no hay suficientes registros para calcular reportes.")
     else:
